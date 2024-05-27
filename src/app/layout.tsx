@@ -16,7 +16,27 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div className="flex flex-col min-h-screen">
+          <header className="bg-gray-800 text-white p-4">
+            <div className="container mx-auto flex justify-between items-center">
+              <h1 className="text-2xl font-bold">Mohamed Nasser</h1>
+              <nav>
+                <a href="/" className="ml-4 text-lg hover:underline">Home</a>
+                <a href="/about" className="ml-4 text-lg hover:underline">About</a>
+              </nav>
+            </div>
+          </header>
+
+          {children}
+
+          <footer className="bg-gray-800 text-white p-4">
+            <div className="container mx-auto text-center">
+              <p>&copy; 2024 My Store. All rights reserved at .MOHAMEDNASSER.</p>
+            </div>
+          </footer>
+        </div>
+      </body>
     </html>
   );
 }
