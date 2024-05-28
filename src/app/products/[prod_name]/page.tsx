@@ -3,15 +3,19 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { products } from "@/app/products_db";
 
-type Props = {params: {prod_id: string}};
+type Props = {params: {prod_name: string}};
+
+function getSlugged(item: string) {
+    return item.replace(/ /g, "_").replace(/\./g, "").toLowerCase();
+};
 
 // Define getProduct globally outside the component
-const getProduct = (prodId: string) => {
-    return products.find(product => product.id === parseInt(prodId));
+const getProduct = (prodName: string) => {
+    return products.find(product => getSlugged(prodName) === getSlugged(product.name));
 };
 
 export const generateMetadata = ({params}: Props): Metadata => {
-    const product = getProduct(params.prod_id);
+    const product = getProduct(params.prod_name);
     const productName = product ? product.name : "";
 
     return {
@@ -20,13 +24,13 @@ export const generateMetadata = ({params}: Props): Metadata => {
 };
 
 const SingleProductPage = ({params}: Props) => {
-    const product = getProduct(params.prod_id);
+    const product = getProduct(params.prod_name);
 
     return (
         <div className="container mx-auto p-4">
             {product ? (
                 <div className="rounded-lg shadow-md p-6">
-                    <h3 className="text-2xl font-bold mb-4">Product No. {params.prod_id}</h3>
+                    <h3 className="text-2xl font-bold mb-4">Product No. {product.id}</h3>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <img src={product.image} alt={product.name} className="w-full h-auto rounded-lg" />
