@@ -1,7 +1,7 @@
 import React from "react";
 import { Metadata } from "next";
 import Link from "next/link";
-import { products } from "@/app/products_db";
+import { products } from "@/app/utils/data";
 
 type Props = {params: {prod_name: string}};
 
@@ -11,12 +11,12 @@ function getSlugged(item: string) {
 
 // Define getProduct globally outside the component
 const getProduct = (prodName: string) => {
-    return products.find(product => getSlugged(prodName) === getSlugged(product.name));
+    return products.find(product => getSlugged(prodName) === getSlugged(product.title));
 };
 
 export const generateMetadata = ({params}: Props): Metadata => {
     const product = getProduct(params.prod_name);
-    const productName = product ? product.name : "";
+    const productName = product ? product.title : "";
 
     return {
         title: `${productName}`,
@@ -33,10 +33,13 @@ const SingleProductPage = ({params}: Props) => {
                     <h3 className="text-2xl font-bold mb-4">Product No. {product.id}</h3>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <img src={product.image} alt={product.name} className="w-full h-auto rounded-lg" />
+                            <img src={product.image} alt={product.title} className="w-full h-auto rounded-lg" />
                         </div>
                         <div>
-                            <p className="text-lg">Name: {product.name}</p>
+                            <p className="text-lg">Title: {product.title}</p>
+                            <p className="text-lg">Company: {product.brand}</p>
+                            <p className="text-lg">Description: {product.description}</p>
+                            <p className="text-lg">Category: {product.category}</p>
                             <p className="text-lg">Price: {product.price}</p>
                         </div>
                     </div>

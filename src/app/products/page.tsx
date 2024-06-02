@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { products } from "../products_db";
+import { products } from "../utils/data";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -35,9 +35,9 @@ const Products = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {products.map(product => (
-                    <Link key={product.id} href={"/products/" + getSlugged(product.name)} className="block p-4 border rounded-lg shadow hover:shadow-lg transition-shadow duration-300 text-center">
-                        <img src={product.image} alt={product.name} className="mb-4 w-full h-32 object-cover" />
-                        <h2 className="text-xl font-bold">{product.name}</h2>
+                    <Link key={product.id} href={"/products/" + getSlugged(product.title)} className="block p-4 border rounded-lg shadow hover:shadow-lg transition-shadow duration-300 text-center">
+                        <img src={product.image} alt={product.title} className="mb-4 w-full h-32 object-cover" />
+                        <h2 className="text-xl font-bold">{product.title}</h2>
                     </Link>
                 ))}
             </div>

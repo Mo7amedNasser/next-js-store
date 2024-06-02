@@ -1,5 +1,5 @@
 import React from "react";
-import { products } from "@/app/products_db";
+import { products } from "@/app/utils/data";
 import Link from "next/link";
 import { Metadata } from "next";
 
@@ -22,7 +22,7 @@ export const generateMetadata = ({ searchParams }: SearchProductProps): Metadata
 const searchProduct = ({ searchParams }: SearchProductProps) => {
   const query = searchParams.q;
   const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(query.toLowerCase()) ||
+    product.title.toLowerCase().includes(query.toLowerCase()) ||
     product.category.toLowerCase().includes(query.toLowerCase()) ||
     product.brand.toLowerCase().includes(query.toLowerCase())
   );
@@ -34,9 +34,9 @@ const searchProduct = ({ searchParams }: SearchProductProps) => {
           {filteredProducts.length > 0 ? (
             <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredProducts.map(product => (
-                <Link href={'/products/' + getSlugged(product.name)} key={product.id}>
+                <Link href={'/products/' + getSlugged(product.title)} key={product.id}>
                   <li className="border p-4 rounded-lg">
-                    <h2 className="text-xl font-semibold">{product.name}</h2>
+                    <h2 className="text-xl font-semibold">{product.title}</h2>
                     <p className="text-gray-700">Company: <span className="text-emerald-600">{product.brand}</span></p>
                   </li>
                 </Link>
