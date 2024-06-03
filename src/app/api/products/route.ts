@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { products } from '@/app/utils/data';
-import { Product } from '@/app/utils/types';
 import { createProductSchema } from '@/app/utils/validationSchemas';
 import { CreateProductDTO } from '@/app/utils/DTOs';
+import prisma from '@/app/utils/db';
+import { Product } from '@prisma/client';
 
 /**
  * @method GET
@@ -10,8 +10,17 @@ import { CreateProductDTO } from '@/app/utils/DTOs';
  * @dec    Get All Products
  * @access public
  */
-export function GET(request: NextRequest) {
-  return NextResponse.json(products, {status: 200});
+export async function GET(request: NextRequest) {
+  try {
+    const products = await prisma.product.findMany();
+
+    return NextResponse.json(products, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
+  }
 };
 
 /**
@@ -21,23 +30,30 @@ export function GET(request: NextRequest) {
  * @access public
  */
 export async function POST(request: NextRequest) {
-  const body = (await request.json()) as CreateProductDTO;
+  try {
+    const body = (await request.json()) as CreateProductDTO;
 
-  const validation = createProductSchema.safeParse(body);
-  if (!validation.success) {
-    return NextResponse.json({message: validation.error.errors[0].message}, {status: 400});
-  };
+    const validation = createProductSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json({ message: validation.error.errors[0].message }, { status: 400 });
+    };
 
-  const newProduct: Product = {
-    id: products.length + 1,
-    title: body.title,
-    category: "Mobile",
-    brand: "Xiaomi",
-    image: "https://via.placeholder.com/150",
-    description: body.body,
-    price: 999,
-  };
+    const newProduct: Product = await prisma.product.create({
+      data: {
+        title: body.title,
+        description: body.description,
+        category: body.category,
+        brand: body.brand,
+        image: body.image,
+        price: body.price,
+      }
+    });
 
-  products.push(newProduct);
-  return NextResponse.json(newProduct, {status: 201});
+    return NextResponse.json(newProduct, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
+  }
 };

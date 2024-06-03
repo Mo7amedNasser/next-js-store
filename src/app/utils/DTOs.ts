@@ -1,9 +1,17 @@
 export interface CreateProductDTO {
   title: string;
-  body: string;
+  description: string;
+  category: string;
+  brand: string;
+  image: string;
+  price: number;
 };
 
 export interface UpdateProductDTO {
   title?: string;
-  body?: string;
+  description?: string;
+  category?: string;
+  brand?: string;
+  image?: string;
+  price?: number;
 };

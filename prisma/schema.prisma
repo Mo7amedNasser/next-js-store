@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  username  String   @db.VarChar(100) // max-length(100)
+  password  String
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relate a user to all comments
+  comments Comment[]
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(200)
+  description String
+  category    String   @db.VarChar(10)
+  brand       String   @db.VarChar(10)
+  image       String
+  price       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relate a product to all comments
+  comments    Comment[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  productId Int
+  userId    Int
+
+  // One-To-Many relation between Product & Comment
+  product   Product  @relation(fields: [productId], references: [id])
+  // One-To-Many relation between User & Comment
+  user      User     @relation(fields: [userId], references: [id])
+}

@@ -1,0 +1,4 @@
+Prisma:
+  npx prisma init
+  npx prisma migrate dev -> After make your schemas
+  npx prisma studio

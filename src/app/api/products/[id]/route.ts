@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { products } from "@/app/utils/data";
 import { UpdateProductDTO } from "@/app/utils/DTOs";
+import prisma from "@/app/utils/db";
 
 interface Props {
   params: { id: string };
-};
-
-const getProductById = (id: string) => {
-  return products.find(p => p.id === parseInt(id));
 };
 
 /**
@@ -16,14 +12,23 @@ const getProductById = (id: string) => {
  * @dec    Get Single Product By Id
  * @access public
  */
-export function GET(request: NextRequest, {params}: Props) {
-  const product = getProductById(params.id);
+export async function GET(request: NextRequest, { params }: Props) {
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id: parseInt(params.id) }
+    });
 
-  if (!product) {
-    return NextResponse.json({message: "Product not found"}, {status: 404});
-  };
+    if (!product) {
+      return NextResponse.json({ message: "Product not found" }, { status: 404 });
+    };
 
-  return NextResponse.json(product, {status: 200});
+    return NextResponse.json(product, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
+  }
 };
 
 /**
@@ -32,18 +37,36 @@ export function GET(request: NextRequest, {params}: Props) {
  * @dec    Update A Product
  * @access public
  */
-export async function PUT(request: NextRequest, {params}: Props) {
-  const product = getProductById(params.id);
+export async function PUT(request: NextRequest, { params }: Props) {
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id: parseInt(params.id) },
+    });
 
-  if (!product) {
-    return NextResponse.json({message: "Product not found"}, {status: 404});
-  };
+    if (!product) {
+      return NextResponse.json({ message: "Product not found" }, { status: 404 });
+    };
 
-  const body = (await request.json()) as UpdateProductDTO;
+    const body = (await request.json()) as UpdateProductDTO;
+    const updatedProduct = await prisma.product.update({
+      where: { id: parseInt(params.id) },
+      data: {
+        title: body.title,
+        description: body.description,
+        category: body.category,
+        brand: body.brand,
+        image: body.image,
+        price: body.price,
+      },
+    });
 
-  console.log(body);
-
-  return NextResponse.json({message: "Product updated"}, {status: 200});
+    return NextResponse.json(updatedProduct, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
+  }
 };
 
 /**
@@ -52,12 +75,25 @@ export async function PUT(request: NextRequest, {params}: Props) {
  * @dec    Delete A Product
  * @access public
  */
-export async function DELETE(request: NextRequest, {params}: Props) {
-  const product = getProductById(params.id);
+export async function DELETE(request: NextRequest, { params }: Props) {
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id: parseInt(params.id) },
+    });
 
-  if (!product) {
-    return NextResponse.json({message: "Product not found"}, {status: 404});
-  };
+    if (!product) {
+      return NextResponse.json({ message: "Product not found" }, { status: 404 });
+    };
 
-  return NextResponse.json({message: "Product deleted"}, {status: 200});
+    await prisma.product.delete({
+      where: { id: parseInt(params.id) },
+    });
+
+    return NextResponse.json({ message: "Product deleted successfully" }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
+  }
 };
