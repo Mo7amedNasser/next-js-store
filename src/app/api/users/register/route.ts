@@ -3,6 +3,10 @@ import { RegisterUserDTO } from "@/app/utils/DTOs";
 import { registerSchema } from "@/app/utils/validationSchemas";
 import prisma from "@/app/utils/db";
 import bcrypt from "bcryptjs";
+import { generateJWT } from "@/app/utils/generateToken";
+import { JWTPayload } from "@/app/utils/types";
+
+// # The Register Process Is A Form Of Authentication Processes #
 
 /**
  * @method POST
@@ -44,7 +48,17 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(newUser, { status: 201 });
+    // Generate JWT Token
+    const jwtPayload: JWTPayload = {
+      id: newUser.id,
+      username: newUser.username,
+      email: newUser.email,
+      isAdmin: newUser.isAdmin
+    };
+
+    const token = generateJWT(jwtPayload);
+
+    return NextResponse.json({ ...newUser, token }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
       { message: "Internal server error" },

@@ -9,3 +9,9 @@ Prisma:
 Hashing Passwords:
   - bcryptjs package -> npm i bcryptjs
     > To type the pachage for the TypeScript -> npm i -D @types/bcryptjs
+
+JWT Authentication:
+  - jsonwebtoken package -> npm i jsonwebtoken
+    > To type the pachage for the TypeScript -> npm i @types/jsonwebtoken -D
+
+# [-D] means (Dev Dependencies) locaten in package.json file

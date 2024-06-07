@@ -25,3 +25,9 @@ export const registerSchema = z.object({
   email: z.string().min(3).max(20).email(),
   password: z.string().min(6, { message: "The password should be longer than 6 characters." }),
 });
+
+// Create Login Schema
+export const loginSchema = z.object({
+  email: z.string().min(3).max(20).email(),
+  password: z.string().min(6),
+});
