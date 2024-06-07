@@ -15,3 +15,9 @@ export interface UpdateProductDTO {
   image?: string;
   price?: number;
 };
+
+export interface RegisterUserDTO {
+  username: string;
+  email: string;
+  password: string;
+};

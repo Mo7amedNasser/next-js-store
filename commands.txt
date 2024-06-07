@@ -1,4 +1,11 @@
+Blocking To Sync:
+  - Add .env file into .gitignore file
+
 Prisma:
   npx prisma init
   npx prisma migrate dev -> After make your schemas
   npx prisma studio
+
+Hashing Passwords:
+  - bcryptjs package -> npm i bcryptjs
+    > To type the pachage for the TypeScript -> npm i -D @types/bcryptjs

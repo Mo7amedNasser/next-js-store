@@ -1,5 +1,10 @@
 import { z } from 'zod';
 
+/**
+ * If you need to make a field optional add //.optional() method
+*/
+
+// Create Product Schema
 export const createProductSchema = z.object({
   title: z.string({
     required_error: "Title is required",
@@ -12,4 +17,11 @@ export const createProductSchema = z.object({
   brand: z.string().min(2).max(10),
   image: z.string().min(5),
   price: z.number().min(5),
+});
+
+// Create Register Schema
+export const registerSchema = z.object({
+  username: z.string().min(2).max(15),
+  email: z.string().min(3).max(20).email(),
+  password: z.string().min(6, { message: "The password should be longer than 6 characters." }),
 });
