@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { UpdateProductDTO } from "@/app/utils/DTOs";
-import prisma from "@/app/utils/db";
+import { UpdateProductDTO } from "@/utils/DTOs";
+import prisma from "@/utils/db";
 
 interface Props {
   params: { id: string };

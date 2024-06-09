@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { RegisterUserDTO } from "@/app/utils/DTOs";
-import { registerSchema } from "@/app/utils/validationSchemas";
-import prisma from "@/app/utils/db";
+import { RegisterUserDTO } from "@/utils/DTOs";
+import { registerSchema } from "@/utils/validationSchemas";
+import prisma from "@/utils/db";
 import bcrypt from "bcryptjs";
-import { generateJWT } from "@/app/utils/generateToken";
-import { JWTPayload } from "@/app/utils/types";
+import { setCookie } from "@/utils/generateToken";
 
 // # The Register Process Is A Form Of Authentication Processes #
 
@@ -48,17 +47,24 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Generate JWT Token
-    const jwtPayload: JWTPayload = {
+    // Call the setCookie() function to create the cookie
+    const cookie = setCookie({
       id: newUser.id,
       username: newUser.username,
       email: newUser.email,
       isAdmin: newUser.isAdmin
-    };
+    });
 
-    const token = generateJWT(jwtPayload);
-
-    return NextResponse.json({ ...newUser, token }, { status: 201 });
+    return NextResponse.json(
+      {
+        ...newUser,
+        message: "Registered & Authenticated"
+      },
+      {
+        status: 201,
+        headers: { "Set-Cookie": cookie }
+      }
+    );
   } catch (error) {
     return NextResponse.json(
       { message: "Internal server error" },

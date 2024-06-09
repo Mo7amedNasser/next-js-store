@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { LoginUserDTO } from "@/app/utils/DTOs";
-import { loginSchema } from "@/app/utils/validationSchemas";
-import prisma from "@/app/utils/db";
+import { LoginUserDTO } from "@/utils/DTOs";
+import { loginSchema } from "@/utils/validationSchemas";
+import prisma from "@/utils/db";
 import bcrypt from "bcryptjs";
-import { generateJWT } from "@/app/utils/generateToken";
-import { JWTPayload } from "@/app/utils/types";
+import { setCookie } from "@/utils/generateToken";
 
 // # The Login Process Is A Form Of Authentication Processes #
 
@@ -51,19 +50,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate JWT Token
-    const jwtPayload: JWTPayload = {
+    // call the setCookie() function to create the cookie
+    const cookie = setCookie({
       id: user.id,
       username: user.username,
       email: user.email,
       isAdmin: user.isAdmin
-    };
-
-    const token = generateJWT(jwtPayload);
+    });
 
     return NextResponse.json(
-      { message: 'Authenticated', token },
-      { status: 200 }
+      { message: 'Authenticated' },
+      {
+        status: 200,
+        headers: { "Set-Cookie": cookie }
+      }
     );
   } catch (error) {
     return NextResponse.json(

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { products } from "../utils/data";
+import { products } from "../../utils/data";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 

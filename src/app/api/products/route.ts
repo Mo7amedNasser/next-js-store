@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createProductSchema } from '@/app/utils/validationSchemas';
-import { CreateProductDTO } from '@/app/utils/DTOs';
-import prisma from '@/app/utils/db';
+import { createProductSchema } from '@/utils/validationSchemas';
+import { CreateProductDTO } from '@/utils/DTOs';
+import prisma from '@/utils/db';
 import { Product } from '@prisma/client';
 
 /**

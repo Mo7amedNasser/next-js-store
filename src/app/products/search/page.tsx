@@ -1,5 +1,5 @@
 import React from "react";
-import { products } from "@/app/utils/data";
+import { products } from "@/utils/data";
 import Link from "next/link";
 import { Metadata } from "next";
 

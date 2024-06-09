@@ -1,7 +1,7 @@
 import React from "react";
 import { Metadata } from "next";
 import Link from "next/link";
-import { products } from "@/app/utils/data";
+import { products } from "@/utils/data";
 
 type Props = {params: {prod_name: string}};
 
