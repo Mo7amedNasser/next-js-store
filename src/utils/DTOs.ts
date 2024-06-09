@@ -31,3 +31,9 @@ export interface LoginUserDTO {
   email: string;
   password: string;
 };
+
+export interface UpdateUserDTO {
+  username?: string;
+  email?: string;
+  password?: string;
+};
