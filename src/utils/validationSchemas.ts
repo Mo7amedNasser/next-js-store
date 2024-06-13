@@ -31,3 +31,14 @@ export const loginSchema = z.object({
   email: z.string().min(3).max(20).email(),
   password: z.string().min(6),
 });
+
+// Create Comment Schema
+export const createCommentSchema = z.object({
+  text: z.string().min(5).max(500),
+  productId: z.number(),
+});
+
+// Update Comment Schema
+export const updateCommentSchema = z.object({
+  text: z.string().min(5).max(500)
+});

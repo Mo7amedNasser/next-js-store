@@ -37,3 +37,12 @@ export interface UpdateUserDTO {
   email?: string;
   password?: string;
 };
+
+export interface createCommentDTO {
+  text: string;
+  productId: number;
+};
+
+export interface updateCommentDTO {
+  text: string;
+};

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { UpdateProductDTO } from "@/utils/DTOs";
+import { UpdateProductDTO } from "@/utils/dtos";
 import prisma from "@/utils/db";
 
 interface Props {

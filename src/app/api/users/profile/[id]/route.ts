@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/utils/db";
 import { verifyToken } from "@/utils/verifyToken";
-import { UpdateUserDTO } from "@/utils/DTOs";
+import { UpdateUserDTO } from "@/utils/dtos";
 import bcrypt from "bcryptjs";
 
 /*
@@ -11,7 +11,7 @@ import bcrypt from "bcryptjs";
 
 interface Props {
   params: { id: string };
-}
+};
 
 /**
  * @method DELETE
@@ -69,7 +69,7 @@ export async function DELETE(request: NextRequest, { params }: Props) {
  * @method GET
  * @route  ~/api/users/profile/:id
  * @dec    Get Profile By Id
- * @access private (only users that have a profile can get their profile by its [JWT token -> Id])
+ * @access private (only users that have a profile can get his profile by its [JWT token -> Id])
  */
 export async function GET(request: NextRequest, { params }: Props) {
   try {
@@ -97,10 +97,7 @@ export async function GET(request: NextRequest, { params }: Props) {
     if (userFromToken === null || userFromToken.id !== user.id) {
       // This return to notice the user that he can't get a profile that related to another user
       return NextResponse.json(
-        {
-          message:
-            "Forbidden, Only the user who has logged in can get (access) his account's profile",
-        },
+        { message: "Forbidden, Only the user who has logged in can get (access) his account's profile", },
         { status: 403 } // (403) Forbidden
       );
     }
@@ -150,6 +147,14 @@ export async function PUT(request: NextRequest, { params }: Props) {
 
     // If password is updated, I hashed it before storing it in the database by (bcryptjs)
     if (body.password) {
+      // Validate that the length of the given password is longer than 6 chars before storing it
+      if (body.password.length < 6) {
+        return NextResponse.json(
+          { message: "Password must be at least 6 characters" },
+          { status: 400 }
+        );
+      }
+
       const salt = await bcrypt.genSalt(10);
       body.password = await bcrypt.hash(body.password, salt);
     }

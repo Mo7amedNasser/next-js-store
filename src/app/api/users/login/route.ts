@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { LoginUserDTO } from "@/utils/DTOs";
+import { LoginUserDTO } from "@/utils/dtos";
 import { loginSchema } from "@/utils/validationSchemas";
 import prisma from "@/utils/db";
 import bcrypt from "bcryptjs";
