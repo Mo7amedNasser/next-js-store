@@ -32,6 +32,13 @@ export const loginSchema = z.object({
   password: z.string().min(6),
 });
 
+// Update User Profile Schema
+export const updateUserSchema = z.object({
+  username: z.string().min(2).max(15).optional(),
+  email: z.string().min(3).max(20).email().optional(),
+  password: z.string().min(6, { message: "The password should be longer than 6 characters." }).optional(),
+});
+
 // Create Comment Schema
 export const createCommentSchema = z.object({
   text: z.string().min(5).max(500),

@@ -3,6 +3,7 @@ import prisma from "@/utils/db";
 import { verifyToken } from "@/utils/verifyToken";
 import { UpdateUserDTO } from "@/utils/dtos";
 import bcrypt from "bcryptjs";
+import { updateUserSchema } from "@/utils/validationSchemas";
 
 /*
   # The Delete, Get Profile Process Is A Form Of Authorization Processes #
@@ -17,13 +18,16 @@ interface Props {
  * @method DELETE
  * @route  ~/api/users/profile/:id
  * @dec    Delete Profile
- * @access private (only users that have a profile can delete their profile by its [JWT token -> Id])
+ * @access private (only [users that have a profile] or admin can delete their profile and their profile's related comments by its [JWT token -> Id])
  */
 export async function DELETE(request: NextRequest, { params }: Props) {
   try {
     // Get the user from the database
     const user = await prisma.user.findUnique({
       where: { id: parseInt(params.id) },
+      include: {
+        comments: true,
+      },
     });
 
     // Check if the user isn't existed in the database
@@ -40,11 +44,18 @@ export async function DELETE(request: NextRequest, { params }: Props) {
     // get the user data from token by verifyToken() function
     const userFromToken = verifyToken(request);
 
-    if (userFromToken !== null && userFromToken.id === user.id) {
+    if (userFromToken !== null && userFromToken.id === user.id || userFromToken?.isAdmin === true) {
+      // Deleting the user
       await prisma.user.delete({ where: { id: parseInt(params.id) } });
 
+      // Deleting the user's comments
+      const commentIds = user.comments.map(comment => comment.id);
+      await prisma.comment.deleteMany({
+        where: { id: { in: commentIds } },
+      });
+
       return NextResponse.json(
-        { message: "Your profile (account) has been deleted" },
+        { message: "Your profile (account) and its related comments have been deleted" },
         { status: 200 }
       );
     }
@@ -53,7 +64,7 @@ export async function DELETE(request: NextRequest, { params }: Props) {
     return NextResponse.json(
       {
         message:
-          "Forbidden, Only the user who has logged in can delete his account's profile",
+          "Forbidden, Only the (user who has logged in) or admins can delete his account's profile",
       },
       { status: 403 } // (403) Forbidden
     );
@@ -145,16 +156,17 @@ export async function PUT(request: NextRequest, { params }: Props) {
     // Fetch the updated data from the API
     const body = (await request.json()) as UpdateUserDTO;
 
+    // Validating on the given data
+    const validation = updateUserSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { message: validation.error.errors[0].message },
+        { status: 400 },
+      );
+    }
+
     // If password is updated, I hashed it before storing it in the database by (bcryptjs)
     if (body.password) {
-      // Validate that the length of the given password is longer than 6 chars before storing it
-      if (body.password.length < 6) {
-        return NextResponse.json(
-          { message: "Password must be at least 6 characters" },
-          { status: 400 }
-        );
-      }
-
       const salt = await bcrypt.genSalt(10);
       body.password = await bcrypt.hash(body.password, salt);
     }

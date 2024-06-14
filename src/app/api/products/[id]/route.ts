@@ -103,7 +103,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
  * @method DELETE
  * @route  ~/api/products/:id
  * @dec    Delete A Product
- * @access private (Only admins can delete any product)
+ * @access private (Only admins can delete any product and its related comments)
  */
 export async function DELETE(request: NextRequest, { params }: Props) {
   try {
@@ -116,10 +116,15 @@ export async function DELETE(request: NextRequest, { params }: Props) {
       );
     }
 
+    // Fetch the targetted product and its related comments from database
     const product = await prisma.product.findUnique({
       where: { id: parseInt(params.id) },
+      include: {
+        comments: true,
+      },
     });
 
+    // Check if the product is existed in database
     if (!product) {
       return NextResponse.json(
         { message: "Product not found" },
@@ -127,12 +132,19 @@ export async function DELETE(request: NextRequest, { params }: Props) {
       );
     }
 
+    // Deleting the product from database (prisma)
     await prisma.product.delete({
       where: { id: parseInt(params.id) },
     });
 
+    // Deleting all the product's related comments from database
+    const commentIds: number[] = product?.comments.map(comment => comment.id);
+    await prisma.comment.deleteMany({
+      where: { id: { in: commentIds } },
+    });
+
     return NextResponse.json(
-      { message: "Product deleted successfully" },
+      { message: "The product and its comments are deleted successfully" },
       { status: 200 }
     );
   } catch (error) {
