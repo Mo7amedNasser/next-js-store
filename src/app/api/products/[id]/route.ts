@@ -5,7 +5,7 @@ import { verifyToken } from "@/utils/verifyToken";
 
 interface Props {
   params: { id: string };
-};
+}
 
 /**
  * @method GET
@@ -16,21 +16,38 @@ interface Props {
 export async function GET(request: NextRequest, { params }: Props) {
   try {
     const product = await prisma.product.findUnique({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(params.id) },
+      include: {
+        comments: {
+          include: {
+            user: {
+              select: {
+                username: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
     });
 
     if (!product) {
-      return NextResponse.json({ message: "Product not found" }, { status: 404 });
-    };
+      return NextResponse.json(
+        { message: "Product not found" },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json(product, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
-};
+}
 
 /**
  * @method PUT
@@ -54,8 +71,11 @@ export async function PUT(request: NextRequest, { params }: Props) {
     });
 
     if (!product) {
-      return NextResponse.json({ message: "Product not found" }, { status: 404 });
-    };
+      return NextResponse.json(
+        { message: "Product not found" },
+        { status: 404 }
+      );
+    }
 
     const body = (await request.json()) as UpdateProductDTO;
     const updatedProduct = await prisma.product.update({
@@ -77,7 +97,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
       { status: 500 }
     );
   }
-};
+}
 
 /**
  * @method DELETE
@@ -101,18 +121,24 @@ export async function DELETE(request: NextRequest, { params }: Props) {
     });
 
     if (!product) {
-      return NextResponse.json({ message: "Product not found" }, { status: 404 });
-    };
+      return NextResponse.json(
+        { message: "Product not found" },
+        { status: 404 }
+      );
+    }
 
     await prisma.product.delete({
       where: { id: parseInt(params.id) },
     });
 
-    return NextResponse.json({ message: "Product deleted successfully" }, { status: 200 });
+    return NextResponse.json(
+      { message: "Product deleted successfully" },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }
     );
   }
-};
+}
